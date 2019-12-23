@@ -13,6 +13,7 @@ let lexer = moo.states({
     default: {
         whitespace:  { match: /\s+/, lineBreaks: true },
         commentStart: { match: /[\[]/, push: 'comment' },
+        commentEnd: { match: /[\]]/ },
         number:  { match: /0|[1-9][0-9]*/ },
         string:  { match: /"(?:\\["\\]|[^\n"\\])*?"/ },
         equals: '=',
@@ -38,7 +39,7 @@ var grammar = {
     ParserRules: [
     {"name": "comment$ebnf$1", "symbols": []},
     {"name": "comment$ebnf$1", "symbols": ["comment$ebnf$1", (lexer.has("commentText") ? {type: "commentText"} : commentText)], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "comment", "symbols": [(lexer.has("commentStart") ? {type: "commentStart"} : commentStart), "comment$ebnf$1", (lexer.has("commentEnd") ? {type: "commentEnd"} : commentEnd)], "postprocess": id},
+    {"name": "comment", "symbols": ["_", (lexer.has("commentStart") ? {type: "commentStart"} : commentStart), "comment$ebnf$1", (lexer.has("commentEnd") ? {type: "commentEnd"} : commentEnd), "_"], "postprocess": id},
     {"name": "number", "symbols": [(lexer.has("number") ? {type: "number"} : number)], "postprocess": id},
     {"name": "string", "symbols": [(lexer.has("string") ? {type: "string"} : string)], "postprocess": id},
     {"name": "oparithmetic", "symbols": [(lexer.has("arithmeticop") ? {type: "arithmeticop"} : arithmeticop)], "postprocess": id},
@@ -46,7 +47,7 @@ var grammar = {
     {"name": "lparen", "symbols": [(lexer.has("lparen") ? {type: "lparen"} : lparen)], "postprocess": id},
     {"name": "rparen", "symbols": [(lexer.has("rparen") ? {type: "rparen"} : rparen)], "postprocess": id},
     {"name": "colon", "symbols": [(lexer.has("colon") ? {type: "colon"} : colon)], "postprocess": id},
-    {"name": "identifier", "symbols": [(lexer.has("identifier") ? {type: "identifier"} : identifier)], "postprocess": id},
+    {"name": "identifier", "symbols": ["_", (lexer.has("identifier") ? {type: "identifier"} : identifier), "_"], "postprocess": id},
     {"name": "keyword", "symbols": [(lexer.has("keyword") ? {type: "keyword"} : keyword)], "postprocess": id},
     {"name": "equals", "symbols": [(lexer.has("equals") ? {type: "equals"} : equals)], "postprocess": id},
     {"name": "_", "symbols": []},
