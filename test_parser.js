@@ -4,6 +4,16 @@ const fs = require('fs');
 
 const parser = new nearley.Parser(nearley.Grammar.fromCompiled(poweron));
 
-parser.feed(fs.readFileSync('example.po').toString());
+let input = fs.readFileSync('example.po').toString();
+//fs.writeFileSync('parserInput.txt', input);
 
-fs.writeFileSync('parserOutput.json', JSON.stringify(parser.results));
+try {
+    parser.feed(input);
+    let results = parser.finish();
+    console.log("length of results: " + results.length);
+    fs.writeFileSync('parserOutput.json', JSON.stringify(results));
+}
+catch (err) {
+    console.log("ERROR: " + JSON.stringify(err));
+}
+

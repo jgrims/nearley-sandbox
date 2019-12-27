@@ -1,51 +1,27 @@
-[**********************************************************************
- This is a block comment                      
- **********************************************************************]
-
+[  Block Comment ]
 SUBROUTINE DEMAND
+[ 
+  multi
+  line 
+  comment 
+]
 WINDOWS
+[ Nested comments]
 TARGET=ACCOUNT
+[]
+
+
+
+
 
 DEFINE
-    [ Externally defined variables ]
-    #INCLUDE "SOMETHING.DEF"
-    #INCLUDE "SOMETHIINGELSE.DEF"
-    
-    [ Local variables ]
-    MYNUMBER = NUMBER
-    MYCHAR = CHARACTER
-    ERROR    = CHARACTER
-    MYNUMBER = NUMBER 
-    MYCHRARRAY  = ARRAY CHARACTER(10)
-    MYNUMARRAY  = ARRAY NUMBER(10)
-    MYUSER = NUMBER
-    MYNAME = CHARACTER
+  #INCLUDE "GLOBAL.DEF"
+  MYCHAR = CHARACTER
+  MYNUM = NUMBER
+  MYARRAY = ARRAY CHARACTER(10)
+  MYCODE = CODE
+  MYDATA = DATE
+  MYMONEY = MONEY
+  MYRATE = RATE
+  MYFLOAT = FLOAT
 END
-
-SETUP
-    [ Externally defined subroutines ] 
-    #INCLUDE "TRACK.REPGEN"
-
-    [ Set an external variable ]
-    TRACKFILENAME="EXAMPLE.PO"
-
-    [ Simple if .. then statement ]                        
-    IF SYSSYMDIRECTORY<>0 THEN TESTMODE=ON
- 
-    [ Simple if..then..else statement ]
-    IF SYSSYMDIRECTORY<>0 THEN 
-        MYCHAR="Something"
-    ELSE
-        MYCHAR="Something Else"
-
-    [ if..then with a do..end block ]
-    IF MYCHAR="Something Else" THEN 
-    DO
-        DIALOGSTART("Example dialog box",100%,0)
-        DIALOGINTROTEXT("This is a doalog box!")
-        DIALOGDISPLAY
-        DIALOGCLOSE
-        TERMINATE
-    END
- END 
- 

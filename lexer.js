@@ -1,31 +1,49 @@
 /*
 A simple lexer for PowerOn specfiles.
 */
-const moo = require('moo')
+const moo = require('moo');
+const keywords = require('./keywords');
+
+const caseInsensitiveKeywords = defs => {
+    const keywords = moo.keywords(defs)
+    return value => keywords(value.toLowerCase())
+  }
 
 let lexer = moo.states({
     default: {
         whitespace:  { match: /\s+/, lineBreaks: true },
-        commentStart: { match: /[\[]/, push: 'comment' },
-        commentEnd: { match: /[\]]/ },
+        comment: { match: /\[[^\]]*\]/, lineBreaks: true},  // Does not support nested comments!
+        //commentstart: { match: /[\[]/, push: 'comment' },
+        //commentend: { match: /[\]]/ },
         number:  { match: /0|[1-9][0-9]*/ },
-        string:  { match: /"(?:\\["\\]|[^\n"\\])*?"/ },
-        equals: '=',
+        string:  { match: /(?:"(?:[^\n"])*?")|(?:\'(?:[^\n\'])*?\')/ },
+        '=': '=',
         logicalop: ['<>', '>', '<', '>=', '<=', 'AND', 'OR', 'NOT'],
         arithmeticop: ['+', '-', '*', '/'],
-        preprocessor: '#',
-        percent: '%',
-        comma: ',',
-        lparen: '(',
-        rparen: ')',
-        colon: ':',
-        identifier: { match: /[a-zA-Z0-9]+/ }
+        hash: '#',
+        '%': '%',
+        ',': ',',
+        '(': '(',
+        ')': ')',
+        ':': ':',
+        '@': '@',
+        '$': '$',
+        '.': '.',
+        identifier: { match: /[a-zA-Z0-9]+/, type: caseInsensitiveKeywords({
+            kwDataType: keywords.dataTypes,
+            kwArray: 'array',
+            kwDivision: keywords.divisions,
+            kwFunction: keywords.functions,
+            keyword: keywords.keywords,
+            kwProgrammingTerm: keywords.terms,
+            kwRecordType: keywords.recordTypes
+        })}
     },
-    comment:  {
-        commentEnd: { match: /[\]]/, pop: true },
-        commentStart: { match: /[\[]/, push: 'comment' },
-        commentText: { match: /[^\[\]]+/, lineBreaks: true }
-    }
+    // comment:  {
+    //     commentend: { match: /[\]]/, pop: true },
+    //     commentstart: { match: /[\[]/, push: 'comment' },
+    //     commenttext: { match: /[^\[\]]+/, lineBreaks: true }
+    // }
 });
 
 module.exports = lexer;
