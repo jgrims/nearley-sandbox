@@ -6,30 +6,38 @@ const lexer = require('./lexer');
 
 @lexer lexer
 
-specfile -> (comments | divisions | include | keywords):*
+# The grand scheme of things.
+specfile -> (divDefine | divSetup | target | include | comment | _ keyword):*
 
-comments -> _ %comment
-          | comments _ %comment
-
-keywords -> _ %keyword
-          | keywords __ %keyword
-
-divisions -> ( divTarget | divDefine | divSetup | divPrint )
-           | divisions _ ( divTarget | divDefine | divSetup | divPrint )
-
-divTarget -> _ ("target"|"TARGET") _ "=" _ %kwRecordType _ 
-
-divDefine -> _ ("define"|"DEFINE") __  defines __ ("end"|"END") 
-defines -> (variableDeclaration | arrayDeclaration | include)
-         | defines __ (variableDeclaration | arrayDeclaration | include)
-variableDeclaration -> _ %identifier _ "=" _ %kwDataType _ 
-arrayDeclaration -> _ %identifier _ "=" _ %kwArray __ %kwDataType "(" _ %number _ ")" 
-
-divSetup  -> _ ("setup"|"SETUP")   __  ("this") __ ("end"|"END")  
-divPrint  -> _ ("print"|"PRINT")   __  ("that") __ ("end"|"END") 
-
-include -> _ %hash ("include"|"INCLUDE") __ %string _ 
+# Divisions
+divDefine -> _ ("define"|"DEFINE") __  (assignment | include | definition | arrayDef | arrayAssign | comment):* __ ("end"|"END")
+divSetup  -> _ ("setup"|"SETUP") __  (assignment | include | arrayAssign | comment):* __ ("end"|"END")
 
 
-_ -> %whitespace:* {% d => null %}
-__ -> %whitespace:+ {% d => null %} 
+
+# Compound statements.
+include     -> _ %hash ("include"|"INCLUDE") __ %string
+target      -> _ ("target"|"TARGET") _ "=" _ recordType
+assignment  -> _ ident _ "=" _ value
+definition  -> _ ident _ "=" _ dataType
+arrayDef    -> _ ident _ "=" _ array __ dataType "(" _ (%number | ident) _ ")"
+arrayAssign -> _ ident _ "(" _ (%number | ident) _ ")" _ "=" _ (value | ident)
+
+
+# Primitives, accounting for each possible token type from the lexer.
+value -> %string {% id %}
+       | %number {% id %}
+       | recordType ":" ident {% d => d[0] + d[1] + d[2] %}
+comment     -> _ %comment           {% id %}
+ident       -> %identifier          {% id %}
+dataType    -> %kwDataType          {% id %}
+array       -> %kwArray             {% id %}
+division    -> %kwDivision          {% id %}
+function    -> %kwFunction          {% id %}
+keyword     -> %keyword             {% id %}
+term        -> %kwProgrammingTerm   {% id %}
+recordType  -> %kwRecordType        {% id %}
+
+# Whitespace
+_ -> null | _ %whitespace {% d => null %}
+__ -> %whitespace | __ %whitespace {% d => null %} 

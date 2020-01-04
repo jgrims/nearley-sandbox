@@ -6,13 +6,9 @@ SUBROUTINE DEMAND
   comment 
 ]
 WINDOWS
-[ Nested comments]
+[ Nested comments don't work yet. ]
 TARGET=ACCOUNT
 []
-
-
-
-
 
 DEFINE
   #INCLUDE "GLOBAL.DEF"
@@ -20,8 +16,16 @@ DEFINE
   MYNUM = NUMBER
   MYARRAY = ARRAY CHARACTER(10)
   MYCODE = CODE
-  MYDATA = DATE
+  MYDATE = DATE
   MYMONEY = MONEY
   MYRATE = RATE
   MYFLOAT = FLOAT
+END
+
+SETUP
+  MYARRAY(1) = "this"
+  MYARRAY(2)="that"
+  MYCHAR = "some char data"
+  MYCODE = 4
+  MYDATE = '12/25/19'
 END
